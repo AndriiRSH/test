@@ -1,7 +1,13 @@
 <?php include("path.php");
 
 include "app/controllers/topics.php";
-$post = selectPostFromPostsWithUsersOnSingle('posts', 'users', $_GET['post']);
+//$post = selectPostFromPostsWithUsersOnSingle('posts', 'users', $_GET['post']);
+$page = isset($_GET['page']) ? $_GET['page']: 1;
+$limit = 2;
+$offset = $limit * ($page - 1);
+$total_pages = round(countRow('posts') / $limit, 0);
+
+$post = selectAllFromPostsWithUsersOnIndex('posts', 'users', $limit, $offset);
 
 ?>
 <!doctype html>
@@ -39,12 +45,13 @@ $post = selectPostFromPostsWithUsersOnSingle('posts', 'users', $_GET['post']);
                     <img src="<?=BASE_URL . 'assets/images/posts/' . $post['img'] ?>" alt="<?=$post['title']?>" class="img-thumbnail">
                 </div>
                 <div class="info">
-                    <i class="far fa-user"> <?=$post['username'];?></i>
-                    <i class="far fa-calendar"> <?=$post['created_date'];?></i>
+                    <i class="far fa-calendar"> <?= $post['created_data'];?></i>
+
                 </div>
                 <div class="single_post_text col-12">
                     <?=$post['content'];?>
                 </div>
+                <?php include("app/include/pagination.php"); ?>
                 <!-- ИНКЛЮДИМ HTML БЛОК С КОММЕНТАРИЯМИ  --->
                 <?php include("app/include/comments.php"); ?>
             </div>

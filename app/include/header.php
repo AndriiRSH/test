@@ -1,4 +1,10 @@
-
+<?php
+include "../../path.php";
+include "../controllers/topics.php";
+//$posts = selectAll('posts', ['id_topic' => $_GET['id']]);
+//$topTopic = selectTopTopicFromPostsOnIndex('posts');
+//$category = selectOne('topics', ['id' => $_GET['id']]);
+?>
 <header class="container-fluid">
     <div class="container">
         <div class="row">
@@ -10,8 +16,6 @@
             <nav class="col-8">
                 <ul>
                     <li><a href="<?php echo BASE_URL ?>">Главная</a> </li>
-                    <li><a href="<?php echo BASE_URL . 'about.php'?>">О нас</a> </li>
-                    <li><a href="#">Услуги</a> </li>
 
                     <li>
                         <?php if (isset($_SESSION['id'])): ?>
