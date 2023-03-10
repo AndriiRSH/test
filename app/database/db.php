@@ -24,6 +24,92 @@ function dbCheckError($query){
     return true;
 }
 
+
+function countAll($table, $conditions = []) {
+    global $pdo;
+
+    $where = '';
+    if(!empty($conditions)){
+        $where = ' WHERE ';
+        $i = 0;
+        foreach ($conditions as $key => $value){
+            if (!is_numeric($value)){
+                $value = "'".$value."'";
+            }
+            if ($i === 0){
+                $where .= "$key=$value";
+            }else{
+                $where .= " AND $key=$value";
+            }
+            $i++;
+        }
+    }
+
+    $sql = "SELECT COUNT(*) FROM $table" . $where;
+
+    $query = $pdo->prepare($sql);
+    $query->execute();
+    dbCheckError($query);
+    return $query->fetchColumn();
+}
+
+// Выборка записей (posts) с автором на главную
+function selectAllTest($table, $conditions = [], $limit = null, $offset = 0) {
+    global $pdo;
+
+    $where = '';
+    if(!empty($conditions)){
+        $where = ' WHERE ';
+        $i = 0;
+        foreach ($conditions as $key => $value){
+            if (!is_numeric($value)){
+                $value = "'".$value."'";
+            }
+            if ($i === 0){
+                $where .= "$key=$value";
+            }else{
+                $where .= " AND $key=$value";
+            }
+            $i++;
+        }
+    }
+
+    $limit_clause = '';
+    if ($limit !== null) {
+        $limit_clause = " LIMIT $limit OFFSET $offset";
+    }
+
+    $sql = "SELECT * FROM $table" . $where . $limit_clause;
+
+    $query = $pdo->prepare($sql);
+    $query->execute();
+    dbCheckError($query);
+    return $query->fetchAll();
+}
+
+//function selectAllFromPostsWithUsersOnIndexTest($table1, $table2, $limit, $offset, $params = []){
+//    global $pdo;
+//    $sql = "SELECT p.*, u.username FROM $table1 AS p JOIN $table2 AS u ON p.id_user = u.id WHERE p.status=1 LIMIT $limit OFFSET $offset";
+//if(!empty($params)){
+//    $i = 0;
+//    foreach ($params as $key => $value){
+//        if (!is_numeric($value)){
+//            $value = "'".$value."'";
+//        }
+//        if ($i === 0){
+//            $sql = $sql . " WHERE $key=$value";
+//        }else{
+//            $sql = $sql . " AND $key=$value";
+//        }
+//        $i++;
+//    }
+//}
+//    $query = $pdo->prepare($sql);
+//    $query->execute();
+//    dbCheckError($query);
+//    return $query->fetchAll();
+//}
+
 // Запрос на получение данных с одной таблицы
 function selectAll($table, $params = []){
     global $pdo;

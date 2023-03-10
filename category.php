@@ -1,7 +1,20 @@
 ﻿<?php
     include "path.php";
     include "app/controllers/topics.php";
-    $posts = selectAll('posts', ['id_topic' => $_GET['id']]);
+
+$page = isset($_GET['page']) ? $_GET['page']: 1;
+$limit = 3;
+$offset = $limit * ($page - 1);
+//$total_pages = round(countRow('posts') / $limit, 0);
+
+//    $posts = selectAllFromPostsWithUsersOnIndex('posts', 'users', $limit, $offset);
+//    $posts = selectAll('posts', ['id_topic' => $_GET['id']]);
+$posts = selectAllTest('posts', ['id_topic' => $_GET['id']], $limit, $offset);
+$total_posts = countAll('posts', ['id_topic' => $_GET['id']]);
+
+// Розраховуємо загальну кількість сторінок пагінації
+$total_pages = ceil($total_posts / $limit);
+
     $topTopic = selectTopTopicFromPostsOnIndex('posts');
     $category = selectOne('topics', ['id' => $_GET['id']]);
 
@@ -29,21 +42,30 @@
 </head>
 <body>
 
-<?php include("app/include/header.php"); ?>
-
-<!-- блок карусели START-->
-
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions"  data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions"  data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-    </div>
-</div>
-<!-- блок карусели END-->
+<?php include("app/include/header.php");
+$pagination = '';
+if ($total_pages > 1) {
+    $pagination .= '<nav aria-label="Page navigation example">';
+    $pagination .= '<ul class="pagination justify-content-center">';
+    $pagination .= '<li class="page-item"><a class="page-link" href="'.BASE_URL.'category.php?id='.$_GET['id'].'&page=1">First</a></li>';
+    if ($page > 1) {
+        $pagination .= '<li class="page-item"><a class="page-link" href="'.BASE_URL.'category.php?id='.$_GET['id'].'&page='.($page-1).'">Prev</a></li>';
+    }
+    for ($i = 1; $i <= $total_pages; $i++) {
+        if ($i == $page) {
+            $pagination .= '<li class="page-item active"><a class="page-link" href="'.BASE_URL.'category.php?id='.$_GET['id'].'&page='.$i.'">'.$i.'</a></li>';
+        } else {
+            $pagination .= '<li class="page-item"><a class="page-link" href="'.BASE_URL.'category.php?id='.$_GET['id'].'&page='.$i.'">'.$i.'</a></li>';
+        }
+    }
+    if ($page < $total_pages) {
+        $pagination .= '<li class="page-item"><a class="page-link" href="'.BASE_URL.'category.php?id='.$_GET['id'].'&page='.($page+1).'">Next</a></li>';
+    }
+    $pagination .= '<li class="page-item"><a class="page-link" href="'.BASE_URL.'category.php?id='.$_GET['id'].'&page='.$total_pages.'">Last</a></li>';
+    $pagination .= '</ul>';
+    $pagination .= '</nav>';
+}
+?>
 
 <!-- блок main-->
 <div class="container">
@@ -51,6 +73,23 @@
         <!-- Main Content -->
         <div class="main-content col-md-9 col-12">
             <h2>Статьи с раздела <strong><?=$category['name']; ?></strong></h2>
+<!--            <nav aria-label="Page navigation example">-->
+<!--                <ul class="pagination justify-content-center">-->
+<!--                    <li class="page-item"><a class="page-link" href="--><?//= BASE_URL . 'category.php?id=' . $topic['id'] . "?page=1";?><!--">First</a></li>-->
+<!--                    --><?php //if($page > 1): ?>
+<!--                        <li class="page-item">-->
+<!--                            <a class="page-link" href="--><?//= BASE_URL . 'category.php?id=' . $topic['id'] . "?page=".($page - 1);?><!--">Prev</a>-->
+<!--                        </li>-->
+<!--                    --><?php //endif; ?>
+<!--                    --><?php //if($page < $total_pages): ?>
+<!--                        <li class="page-item">-->
+<!--                            <a class="page-link" href="--><?//= BASE_URL . 'category.php?id=' . $topic['id']  . "?page=".($page + 1);?><!--">Next</a>-->
+<!--                        </li>-->
+<!--                    --><?php //endif; ?>
+<!--                    <li class="page-item"><a class="page-link" href="--><?//= BASE_URL . 'category.php?id=' . $topic['id']  . "?page=".$total_pages; ?><!--">Last</a></li>-->
+<!--                </ul>-->
+<!--            </nav>-->
+            <?php echo $pagination;?>
             <?php foreach ($posts as $post): ?>
                 <div class="post row">
                     <div class="img col-12 col-md-4">
@@ -61,7 +100,7 @@
                             <a href="<?=BASE_URL . 'single.php?post=' . $post['id'];?>"><?=substr($post['title'], 0, 80) . '...'  ?></a>
                         </h3>
                         <i class="far fa-user"> <?=$post['username'];?></i>
-                        <i class="far fa-calendar"> <?=$post['created_date'];?></i>
+                        <i class="far fa-calendar"> <?=$post['created_data'];?></i>
                         <p class="preview-text">
 
                             <?=mb_substr($post['content'], 0, 55, 'UTF-8'). '...'  ?>
@@ -70,6 +109,7 @@
                 </div>
             <?php endforeach; ?>
 
+<!--            --><?php //include("app/include/pagination.php"); ?>
         </div>
         <!-- sidebar Content -->
         <div class="sidebar col-md-3 col-12">
@@ -87,13 +127,29 @@
                 <ul>
                     <?php foreach ($topics as $key => $topic): ?>
                     <li>
-                        <a href="<?=BASE_URL . 'category.php?id=' . $topic['id']; ?>"><?=$topic['name']; ?></a>
+                        <a href="<?=BASE_URL . 'category.php?id=' . $topic['id'] . '?page=1'; ?>"><?=$topic['name']; ?></a>
                     </li>
                     <?php endforeach; ?>
                 </ul>
             </div>
-
         </div>
+<!--        --><?php //include("app/include/pagination.php"); ?>
+<!--        <nav aria-label="Page navigation example">-->
+<!--            <ul class="pagination justify-content-center">-->
+<!--                <li class="page-item"><a class="page-link" href="--><?//= BASE_URL . 'category.php?id=' . $topic['id'] . "?page=1";?><!--">First</a></li>-->
+<!--                --><?php //if($page > 1): ?>
+<!--                    <li class="page-item">-->
+<!--                        <a class="page-link" href="--><?//= BASE_URL . 'category.php?id=' . $topic['id'] . "?page=".($page - 1);?><!--">Prev</a>-->
+<!--                    </li>-->
+<!--                --><?php //endif; ?>
+<!--                --><?php //if($page < $total_pages): ?>
+<!--                    <li class="page-item">-->
+<!--                        <a class="page-link" href="--><?//= BASE_URL . 'category.php?id=' . $topic['id']  . "?page=".($page + 1);?><!--">Next</a>-->
+<!--                    </li>-->
+<!--                --><?php //endif; ?>
+<!--                <li class="page-item"><a class="page-link" href="?page=--><?//= BASE_URL . 'category.php?id=' . $topic['id']  . "?page=".$total_pages; ?><!--">Last</a></li>-->
+<!--            </ul>-->
+<!--        </nav>-->
     </div>
 </div>
 

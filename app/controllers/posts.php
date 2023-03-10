@@ -24,7 +24,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_post'])){
         $imgName = time() . "_" . $_FILES['img']['name'];
         $fileTmpName = $_FILES['img']['tmp_name'];
         $fileType = $_FILES['img']['type'];
-        $destination = ROOT_PATH . "\assets\images\posts\\" . $imgName;
+        $destination = "dinamic-site\assets\images\posts\\" . $imgName;
 
 
         if (strpos($fileType, 'image') === false) {

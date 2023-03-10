@@ -1,13 +1,13 @@
 <?php include("path.php");
 
 include "app/controllers/topics.php";
-//$post = selectPostFromPostsWithUsersOnSingle('posts', 'users', $_GET['post']);
-$page = isset($_GET['page']) ? $_GET['page']: 1;
-$limit = 2;
-$offset = $limit * ($page - 1);
-$total_pages = round(countRow('posts') / $limit, 0);
-
-$post = selectAllFromPostsWithUsersOnIndex('posts', 'users', $limit, $offset);
+$post = selectPostFromPostsWithUsersOnSingle('posts', 'users', $_GET['post']);
+//$page = isset($_GET['page']) ? $_GET['page']: 1;
+//$limit = 2;
+//$offset = $limit * ($page - 1);
+//$total_pages = round(countRow('posts') / $limit, 0);
+//
+//$post = selectAllFromPostsWithUsersOnIndex('posts', 'users', $limit, $offset);
 
 ?>
 <!doctype html>
@@ -51,7 +51,6 @@ $post = selectAllFromPostsWithUsersOnIndex('posts', 'users', $limit, $offset);
                 <div class="single_post_text col-12">
                     <?=$post['content'];?>
                 </div>
-                <?php include("app/include/pagination.php"); ?>
                 <!-- ИНКЛЮДИМ HTML БЛОК С КОММЕНТАРИЯМИ  --->
                 <?php include("app/include/comments.php"); ?>
             </div>
