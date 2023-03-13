@@ -92,14 +92,14 @@ if ($total_pages > 1) {
             <?php echo $pagination;?>
             <?php foreach ($posts as $post): ?>
                 <div class="post row">
-                    <div class="img col-12 col-md-4">
+                    <div class="img col-12 col-md-3">
                         <img src="<?=BASE_URL . 'assets/images/posts/' . $post['img'] ?>" alt="<?=$post['title']?>" class="img-thumbnail">
                     </div>
                     <div class="post_text col-12 col-md-8">
                         <h3>
                             <a href="<?=BASE_URL . 'single.php?post=' . $post['id'];?>"><?=substr($post['title'], 0, 80) . '...'  ?></a>
                         </h3>
-                        <i class="far fa-user"> <?=$post['username'];?></i>
+<!--                        <i class="far fa-user"> --><?//=$post['username'];?><!--</i>-->
                         <i class="far fa-calendar"> <?=$post['created_data'];?></i>
                         <p class="preview-text">
 
